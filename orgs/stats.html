@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<link rel="manifest" href="manifest.json">
+		<meta name="mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="application-name" content="Реестр иноагентов">
+		<meta name="apple-mobile-web-app-title" content="Реестр иноагентов">
+		<meta name="theme-color" content="#eeeeee">
+		<meta name="msapplication-navbutton-color" content="#eeeeee">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+		<meta name="msapplication-starturl" content="/">
+		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+		<link rel="icon" type="image/jpeg" sizes="256x256" href="https://hsto.org/webt/a_/xt/c_/a_xtc_o6zp8oqpzkamwvuzlayfq.jpeg">
+		<link rel="apple-touch-icon" type="image/jpeg" sizes="256x256" href="https://hsto.org/webt/a_/xt/c_/a_xtc_o6zp8oqpzkamwvuzlayfq.jpeg">
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>Cтатистика - Реестр нежелательных организаций</title>
+		<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
+		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+		<script src="https://albinodrought.github.io/chartjs-plugin-watermark/chartjs-plugin-watermark.js"></script>
+	</head>
+	<body>
+		<nav class="navbar bg-body-tertiary noprint">
+			<div class="container-fluid">
+				<span class="navbar-brand mb-0 h1"><img src="https://habrastorage.org/webt/a_/xt/c_/a_xtc_o6zp8oqpzkamwvuzlayfq.jpeg" alt="Logo" width="30" height="30" class="d-inline-block align-text-top"> Реестр нежелательных организаций</span>
+				<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
+				<div class="collapse navbar-collapse" id="navbarNav">
+					<ul class="navbar-nav">
+						<li class="nav-item"><a class="nav-link active" aria-current="page" href="index.html">Главная</a></li>
+						<li class="nav-item"><a class="nav-link" href="stats.html">Статистика</a></li>
+						<li class="nav-item"><a class="nav-link" href="https://github.com/fz255/foreign-agents">Github</a></li>
+					</ul>
+				</div>
+			</div>
+		</nav>
+		<div class="container">
+			<br>
+			<div class="row">
+				<center>
+					<h2>Статистика</h2>
+				</center>
+			</div>
+			<br>
+			<div style="margin-top: 20px;" class="row">
+				<center>
+					<canvas aria-label="Кол-во включений и исключений по годам (Диаграмма)" role="img" id="years"></canvas>
+				</center>
+			</div>
+			<div style="margin-top: 20px;" class="row">
+				<center>
+					<canvas aria-label="Кол-во включений и исключений по годам (График)" role="img" id="years_line"></canvas>
+				</center>
+			</div>
+			<br>
+		</div>
+		<footer>
+			<center>
+				<br>
+				<p>&copy; 2023, <a href="https://li0ard.github.io">li0ard</a>. Made with 🕊️</p>
+				<br>
+			</center>
+		</footer>
+		<script type="text/javascript">
+			//ff5722
+			//00e676
+			//1e88e5
+			fetch(`https://raw.githubusercontent.com/fz255/undesirable-organizations/main/registry.json`)
+			.then(res => res.json())
+			.then(body => {
+				let years_labes = ["2015", "2016", "2017", "2018", "2019", "2020", "2021", "2022", "2023 *"]
+				let years_dt_in = [body.filter(i => i.dateIn.includes("2015")).length, body.filter(i => i.dateIn.includes("2016")).length, body.filter(i => i.dateIn.includes("2017")).length, body.filter(i => i.dateIn.includes("2018")).length, body.filter(i => i.dateIn.includes("2019")).length, body.filter(i => i.dateIn.includes("2020")).length, body.filter(i => i.dateIn.includes("2021")).length, body.filter(i => i.dateIn.includes("2022")).length, body.filter(i => i.dateIn.includes("2023")).length]
+
+				let years_dt_out = [body.filter(i => i.dateOut.includes("2015")).length, body.filter(i => i.dateOut.includes("2016")).length, body.filter(i => i.dateOut.includes("2017")).length, body.filter(i => i.dateOut.includes("2018")).length, body.filter(i => i.dateOut.includes("2019")).length, body.filter(i => i.dateOut.includes("2020")).length, body.filter(i => i.dateOut.includes("2021")).length, body.filter(i => i.dateOut.includes("2022")).length, body.filter(i => i.dateOut.includes("2023")).length]
+				let years = new Chart(document.getElementById('years'), {
+					type: "bar",
+					data: {
+						labels: years_labes,
+						datasets: [
+							{
+								label: 'Внесено',
+								backgroundColor: ["#1e88e5"],
+								data: years_dt_in
+							},
+							{
+								label: 'Исключено',
+								backgroundColor: "#ff5722",
+								data: years_dt_out
+							}
+						]
+					},
+					options: {
+						plugins: {
+							title: {
+								display: true,
+								text: 'По кол-ву внесений/исключений (Диаграмма)'
+							},
+							subtitle: {
+								display: true,
+								text: '* - на момент последнего обновления'
+							}
+						},
+						watermark: {
+							image: "https://habrastorage.org/webt/a_/xt/c_/a_xtc_o6zp8oqpzkamwvuzlayfq.jpeg",
+							x: 0,
+							y: 0,
+							width: 48,
+							height: 48,
+							opacity: 0.3
+						}
+					}
+				})
+				let years_line = new Chart(document.getElementById('years_line'), {
+					type: "line",
+					data: {
+						labels: years_labes,
+						datasets: [
+							{
+								label: 'Внесено',
+								backgroundColor: "#1e88e5",
+								borderColor: "#1e88e5",
+								data: years_dt_in,
+								pointStyle: 'circle',
+								pointRadius: 5,
+								pointHoverRadius: 10
+							},
+							{
+								label: 'Исключено',
+								backgroundColor: "#ff5722",
+								borderColor: "#ff5722",
+								data: years_dt_out,
+								pointStyle: 'circle',
+								pointRadius: 5,
+								pointHoverRadius: 10
+							}
+						]
+					},
+					options: {
+						plugins: {
+							title: {
+								display: true,
+								text: 'По кол-ву внесений/исключений (График)'
+							},
+							subtitle: {
+								display: true,
+								text: '* - на момент последнего обновления'
+							}
+						},
+						watermark: {
+							image: "https://habrastorage.org/webt/a_/xt/c_/a_xtc_o6zp8oqpzkamwvuzlayfq.jpeg",
+							x: 0,
+							y: 0,
+							width: 48,
+							height: 48,
+							opacity: 0.3
+						}
+					}
+				})
+			})
+		</script>
+	</body>
+</html>

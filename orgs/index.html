@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<link rel="manifest" href="manifest.json">
+		<meta name="mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="application-name" content="Реестр иноагентов">
+		<meta name="apple-mobile-web-app-title" content="Реестр иноагентов">
+		<meta name="theme-color" content="#eeeeee">
+		<meta name="msapplication-navbutton-color" content="#eeeeee">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+		<meta name="msapplication-starturl" content="/">
+		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+		<link rel="icon" type="image/jpeg" sizes="256x256" href="https://hsto.org/webt/a_/xt/c_/a_xtc_o6zp8oqpzkamwvuzlayfq.jpeg">
+		<link rel="apple-touch-icon" type="image/jpeg" sizes="256x256" href="https://hsto.org/webt/a_/xt/c_/a_xtc_o6zp8oqpzkamwvuzlayfq.jpeg">
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>Реестр нежелательных организаций</title>
+		<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
+		<link href="https://cdnjs.cloudflare.com/ajax/libs/gridjs/6.0.6/theme/mermaid.min.css" rel="stylesheet">
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/gridjs/6.0.6/gridjs.production.min.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
+		<script src="https://unpkg.com/gridjs@6.0.6/l10n/dist/l10n.umd.js"></script>
+		<style>
+			@media print {
+				.noprint {
+					display: none;
+				}
+				.print {
+					display: block;
+				}
+			}
+		</style>
+	</head>
+	<body>
+		<div id="card" class="modal fade">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h1 class="modal-title fs-5" id="exampleModalLabel">Запись №<span id="number"></span></h1>
+						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+					</div>
+					<div class="modal-body">
+						<p><b>Полное наименование:</b> <span id="fullName"></span></p>
+						<p><b>Решение Минюста о включении:</b> <span id="decisionInMinjust"></span></p>
+						<p><b>Решение Генеральной прокуратуры о признании деятельности нежелательной:</b> <span id="decisionInGenproc"></span></p>
+						<p><b>Решение Минюста об исключении:</b> <span id="decisionOutMinjust"></span></p>
+						<p><b>Решение Генеральной прокуратуры об отмене признания деятельности нежелательной:</b> <span id="decisionOutGenproc"></span></p>
+						<p><b>Дата включения:</b> <span id="dateIn"></span></p>
+						<p><b>Дата исключения:</b> <span id="dateOut"></span></p>
+					</div>
+					<div class="noprint modal-footer">
+						<button type="button" onclick="window.print()" class="btn btn-primary">Печать</button>
+						<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		<nav class="navbar bg-body-tertiary noprint">
+			<div class="container-fluid">
+				<span class="navbar-brand mb-0 h1"><img src="https://habrastorage.org/webt/a_/xt/c_/a_xtc_o6zp8oqpzkamwvuzlayfq.jpeg" alt="Logo" width="30" height="30" class="d-inline-block align-text-top"> Реестр нежелательных организаций</span>
+				<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
+				<div class="collapse navbar-collapse" id="navbarNav">
+					<ul class="navbar-nav">
+						<li class="nav-item"><a class="nav-link active" aria-current="page" href="index.html">Главная</a></li>
+						<li class="nav-item"><a class="nav-link" href="stats.html">Статистика</a></li>
+						<li class="nav-item"><a class="nav-link" href="https://github.com/fz255/foreign-agents">Github</a></li>
+					</ul>
+				</div>
+			</div>
+		</nav>
+		<div class="container noprint">
+			<br>
+			<div class="row">
+				<center>
+					<div id="reestr"></div>
+				</center>
+			</div>
+		</div>
+		<footer class="noprint">
+			<center>
+				<br>
+				<p>&copy; 2023, <a href="https://li0ard.github.io">li0ard</a>. Made with 🕊️</p>
+				<br>
+			</center>
+		</footer>
+		<script type="text/javascript">
+			const grid = new gridjs.Grid({
+				columns: [
+					{
+						"id": "id",
+						"name": "№"
+					},
+					{
+						"id": "fullName",
+						"name": "Наименование"
+					},
+					{
+						"id": "decisionInMinjust",
+						"name": "Решение Минюста о включении",
+						hidden: true
+					},
+					{
+						"id": "decisionInGenproc",
+						"name": "Решение Генеральной прокуратуры о признании деятельности нежелательной",
+						hidden: true
+					},
+					{
+						"id": "decisionOutMinjust",
+						"name": "Решение Минюста об исключении",
+						hidden: true
+					},
+					{
+						"id": "decisionOutGenproc",
+						"name": "Решение Генеральной прокуратуры об отмене признания деятельности нежелательной",
+						hidden: true
+					},
+
+					{
+						"id": "dateIn",
+						"name": "Дата включения",
+						hidden: true
+					},
+					{
+						"id": "dateOut",
+						"name": "Дата исключения",
+						hidden: true
+					},
+					{
+						"id": "actions",
+						"name": "",
+						formatter: (cell, row) => {
+							return gridjs.h('button', {
+								className: "btn btn-primary",
+								onClick: () => {
+									let data = row.cells
+									document.getElementById("number").textContent = data[0].data
+									document.getElementById("fullName").textContent = data[1].data
+									document.getElementById("decisionInMinjust").textContent = data[2].data
+									document.getElementById("decisionInGenproc").textContent = data[3].data
+									document.getElementById("decisionOutMinjust").textContent = data[4].data
+									document.getElementById("decisionOutGenproc").textContent = data[5].data
+				
+									document.getElementById("dateIn").textContent = data[6].data
+									document.getElementById("dateOut").textContent = data[7].data
+									new bootstrap.Modal("#card").show()
+								}
+							}, 'Просмотр')
+						}
+					}
+				],
+				pagination: {
+					limit: 10
+				},
+				fixedHeader: true,
+				search: {
+					ignoreHiddenColumns: false,
+				},
+				language: gridjs.l10n.ruRU,
+				server: {
+					url: `https://raw.githubusercontent.com/fz255/undesirable-organizations/main/registry.json`,
+					then: data => data
+				}
+			})
+			grid.render(document.getElementById("reestr"));
+		</script>
+	</body>
+</html>
