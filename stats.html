@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<link rel="manifest" href="manifest.json">
+		<meta name="mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="application-name" content="Реестр иноагентов">
+		<meta name="apple-mobile-web-app-title" content="Реестр иноагентов">
+		<meta name="theme-color" content="#eeeeee">
+		<meta name="msapplication-navbutton-color" content="#eeeeee">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+		<meta name="msapplication-starturl" content="/">
+		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+		<link rel="icon" type="image/jpeg" sizes="256x256" href="https://hsto.org/webt/a_/xt/c_/a_xtc_o6zp8oqpzkamwvuzlayfq.jpeg">
+		<link rel="apple-touch-icon" type="image/jpeg" sizes="256x256" href="https://hsto.org/webt/a_/xt/c_/a_xtc_o6zp8oqpzkamwvuzlayfq.jpeg">
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>Cтатистика - Реестр иноагентов</title>
+		<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
+		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+		<script src="https://albinodrought.github.io/chartjs-plugin-watermark/chartjs-plugin-watermark.js"></script>
+	</head>
+	<body>
+		<nav class="navbar bg-body-tertiary noprint">
+			<div class="container-fluid">
+				<span class="navbar-brand mb-0 h1"><img src="https://habrastorage.org/webt/a_/xt/c_/a_xtc_o6zp8oqpzkamwvuzlayfq.jpeg" alt="Logo" width="30" height="30" class="d-inline-block align-text-top"> Реестр иноагентов</span>
+				<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
+				<div class="collapse navbar-collapse" id="navbarNav">
+					<ul class="navbar-nav">
+						<li class="nav-item"><a class="nav-link active" aria-current="page" href="index.html">Главная</a></li>
+						<li class="nav-item"><a class="nav-link" href="stats.html">Статистика</a></li>
+						<li class="nav-item"><a class="nav-link" href="https://minjust.gov.ru/ru/activity/directions/998/">Реестр на сайте Министерства Юстиции</a></li>
+						<li class="nav-item"><a class="nav-link" href="https://minjust.gov.ru/ru/events/list/?words=О+реестре+иностранных+агентов&start_date=&end_date=&page=1">Поиск причины внесения</a></li>
+						<li class="nav-item"><a class="nav-link" href="https://github.com/li0ard/registry-of-foreign-agents/">Github</a></li>
+					</ul>
+				</div>
+			</div>
+		</nav>
+		<div class="container">
+			<br>
+			<div class="row">
+				<center>
+					<h2>Статистика</h2>
+				</center>
+			</div>
+			<br>
+			<div class="row">
+				<div class="col">
+					<center>
+						<canvas aria-label="По типу агента" role="img" id="type"></canvas>
+					</center>
+				</div>
+				<div class="col">
+					<center>
+						<canvas aria-label="По закону" role="img" id="law"></canvas>
+					</center>
+				</div>
+			</div>
+			<div style="margin-top: 20px;" class="row">
+				<center>
+					<canvas aria-label="Кол-во включений и исключений по годам (Диаграмма)" role="img" id="years"></canvas>
+				</center>
+			</div>
+			<div style="margin-top: 20px;" class="row">
+				<center>
+					<canvas aria-label="Кол-во включений и исключений по годам (График)" role="img" id="years_line"></canvas>
+				</center>
+			</div>
+			<br>
+		</div>
+		<footer>
+			<center>
+				<br>
+				<p>&copy; 2023, <a href="https://li0ard.github.io">li0ard</a>. Made with 🕊️</p>
+				<br>
+			</center>
+		</footer>
+		<script type="text/javascript">
+			//ff5722
+			//00e676
+			//1e88e5
+			fetch(`https://raw.githubusercontent.com/li0ard/registry-of-foreign-agents/main/registry.json`)
+			.then(res => res.json())
+			.then(body => {
+				let ul = body.filter(i => i.inn.length==10).length
+				let fl = body.filter(i => i.inn.length==12).length
+				let type = new Chart(document.getElementById('type'), {
+					type: 'pie',
+					data: {
+						labels: ['Юридические лица', 'Физические лица', 'Прочее'],
+						datasets: [{
+							data: [ul, fl, body.length-(ul+fl)],
+							backgroundColor: ['#ff5722', '#00e676', '#1e88e5'],
+							borderWidth: 0.5 ,
+							borderColor: '#ddd'
+						}]
+					},
+					options: {
+						plugins: {
+							title: {
+								display: true,
+								text: 'По типу агента'
+							},
+							subtitle: {
+								display: true,
+								text: `Всего: ${body.length} записей`
+							}
+						},
+						watermark: {
+							image: "https://habrastorage.org/webt/a_/xt/c_/a_xtc_o6zp8oqpzkamwvuzlayfq.jpeg",
+							x: 0,
+							y: 0,
+							width: 48,
+							height: 48,
+							opacity: 0.3
+						}
+					}
+				});
+				//type.canvas.parentNode.style.height = '80vh';
+				let law = new Chart(document.getElementById("law"), {
+					type: "pie",
+					data: {
+						labels: ['ст. 2.1 272-ФЗ *', 'ст. 6 Закона "О СМИ"', 'ст. 25.1 Закона "О СМИ" *', 'cт. 29.1 82-ФЗ *', 'ст. 32 7-ФЗ', 'ст. 7 255-ФЗ', 'ст. 9 255-ФЗ'],
+						datasets: [{
+							data: [
+								body.filter(i => i.law.includes("Статья 2.1")).length,
+								body.filter(i => i.law.includes("Статья 6")).length,
+								body.filter(i => i.law.includes("Статья 25.1")).length,
+								body.filter(i => i.law.includes("Статья 29.1")).length,
+								body.filter(i => i.law.includes("Статья 32")).length,
+								body.filter(i => i.law.includes("Статья 7")).length,
+								body.filter(i => i.law.includes("Статья 9")).length
+							],
+							backgroundColor: ['#4dc9f6', '#f67019',  '#f53794', '#acc236', '#00a950', '#58595b', '#8549ba'],
+							borderWidth: 0.5 ,
+							borderColor: '#ddd'
+						}]
+					},
+					options: {
+						plugins: {
+							title: {
+								display: true,
+								text: 'По основанию'
+							},
+							subtitle: {
+								display: true,
+								text: `* - статья утратила силу`
+							}
+						},
+						watermark: {
+							image: "https://habrastorage.org/webt/a_/xt/c_/a_xtc_o6zp8oqpzkamwvuzlayfq.jpeg",
+							x: 0,
+							y: 0,
+							width: 48,
+							height: 48,
+							opacity: 0.3
+						}
+					}
+				})
+				let years_labes = ["2013","2014", "2015", "2016", "2017", "2018", "2019", "2020", "2021", "2022", "2023 *"]
+				let years_dt_in = [body.filter(i => i.dateIn.includes("2013")).length, body.filter(i => i.dateIn.includes("2014")).length, body.filter(i => i.dateIn.includes("2015")).length, body.filter(i => i.dateIn.includes("2016")).length, body.filter(i => i.dateIn.includes("2017")).length, body.filter(i => i.dateIn.includes("2018")).length, body.filter(i => i.dateIn.includes("2019")).length, body.filter(i => i.dateIn.includes("2020")).length, body.filter(i => i.dateIn.includes("2021")).length, body.filter(i => i.dateIn.includes("2022")).length, body.filter(i => i.dateIn.includes("2023")).length]
+
+				let years_dt_out = [body.filter(i => i.dateOut.includes("2013")).length, body.filter(i => i.dateOut.includes("2014")).length, body.filter(i => i.dateOut.includes("2015")).length, body.filter(i => i.dateOut.includes("2016")).length, body.filter(i => i.dateOut.includes("2017")).length, body.filter(i => i.dateOut.includes("2018")).length, body.filter(i => i.dateOut.includes("2019")).length, body.filter(i => i.dateOut.includes("2020")).length, body.filter(i => i.dateOut.includes("2021")).length, body.filter(i => i.dateOut.includes("2022")).length, body.filter(i => i.dateOut.includes("2023")).length]
+				let years = new Chart(document.getElementById('years'), {
+					type: "bar",
+					data: {
+						labels: years_labes,
+						datasets: [
+							{
+								label: 'Внесено',
+								backgroundColor: ["#1e88e5"],
+								data: years_dt_in
+							},
+							{
+								label: 'Исключено',
+								backgroundColor: "#ff5722",
+								data: years_dt_out
+							}
+						]
+					},
+					options: {
+						plugins: {
+							title: {
+								display: true,
+								text: 'По кол-ву внесений/исключений (Диаграмма)'
+							},
+							subtitle: {
+								display: true,
+								text: '* - на момент последнего обновления'
+							}
+						},
+						watermark: {
+							image: "https://habrastorage.org/webt/a_/xt/c_/a_xtc_o6zp8oqpzkamwvuzlayfq.jpeg",
+							x: 0,
+							y: 0,
+							width: 48,
+							height: 48,
+							opacity: 0.3
+						}
+					}
+				})
+				let years_line = new Chart(document.getElementById('years_line'), {
+					type: "line",
+					data: {
+						labels: years_labes,
+						datasets: [
+							{
+								label: 'Внесено',
+								backgroundColor: "#1e88e5",
+								borderColor: "#1e88e5",
+								data: years_dt_in,
+								pointStyle: 'circle',
+								pointRadius: 5,
+								pointHoverRadius: 10
+							},
+							{
+								label: 'Исключено',
+								backgroundColor: "#ff5722",
+								borderColor: "#ff5722",
+								data: years_dt_out,
+								pointStyle: 'circle',
+								pointRadius: 5,
+								pointHoverRadius: 10
+							}
+						]
+					},
+					options: {
+						plugins: {
+							title: {
+								display: true,
+								text: 'По кол-ву внесений/исключений (График)'
+							},
+							subtitle: {
+								display: true,
+								text: '* - на момент последнего обновления'
+							}
+						},
+						watermark: {
+							image: "https://habrastorage.org/webt/a_/xt/c_/a_xtc_o6zp8oqpzkamwvuzlayfq.jpeg",
+							x: 0,
+							y: 0,
+							width: 48,
+							height: 48,
+							opacity: 0.3
+						}
+					}
+				})
+			})
+		</script>
+	</body>
+</html>
