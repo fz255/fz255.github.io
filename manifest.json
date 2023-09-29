@@ -2,7 +2,7 @@
   "name": "Реестр иноагентов",
   "description": "Просмотр и статистика реестра иноагентов Министерства Юстиции РФ",
   "short_name": "Реестр иноагентов",
-  "start_url": "/registry-of-foreign-agents",
+  "start_url": "/",
   "lang": "ru",
   "theme_color": "#eeeeee",
   "display": "standalone",

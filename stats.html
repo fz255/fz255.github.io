@@ -33,7 +33,7 @@
 						<li class="nav-item"><a class="nav-link" href="stats.html">Статистика</a></li>
 						<li class="nav-item"><a class="nav-link" href="https://minjust.gov.ru/ru/activity/directions/998/">Реестр на сайте Министерства Юстиции</a></li>
 						<li class="nav-item"><a class="nav-link" href="https://minjust.gov.ru/ru/events/list/?words=О+реестре+иностранных+агентов&start_date=&end_date=&page=1">Поиск причины внесения</a></li>
-						<li class="nav-item"><a class="nav-link" href="https://github.com/li0ard/registry-of-foreign-agents/">Github</a></li>
+						<li class="nav-item"><a class="nav-link" href="https://github.com/fz255/foreign-agents">Github</a></li>
 					</ul>
 				</div>
 			</div>
@@ -81,7 +81,7 @@
 			//ff5722
 			//00e676
 			//1e88e5
-			fetch(`https://raw.githubusercontent.com/li0ard/registry-of-foreign-agents/main/registry.json`)
+			fetch(`https://raw.githubusercontent.com/fz255/foreign-agents/main/registry.json`)
 			.then(res => res.json())
 			.then(body => {
 				let ul = body.filter(i => i.inn.length==10).length
