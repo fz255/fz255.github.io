@@ -61,11 +61,10 @@
 			<div style="margin-top: 20px;" class="row">
 				<center>
 					<canvas aria-label="Кол-во включений и исключений по годам (Диаграмма)" role="img" id="years"></canvas>
-				</center>
-			</div>
-			<div style="margin-top: 20px;" class="row">
-				<center>
-					<canvas aria-label="Кол-во включений и исключений по годам (График)" role="img" id="years_line"></canvas>
+					<div>
+						<button disabled onClick='years_cfg.type = "bar"; years.update()' class="btn btn-primary">Диаграмма</button>
+						<button disabled onClick='years_cfg.type = "line"; years.update()'class="btn btn-primary">График</button>
+					</div>
 				</center>
 			</div>
 			<br>
@@ -73,7 +72,7 @@
 		<footer>
 			<center>
 				<br>
-				<p>&copy; 2023, <a href="https://li0ard.github.io">li0ard</a>. Made with 🕊️</p>
+				<p>&copy; 2024, <a href="https://li0ard.github.io">li0ard</a>. Made with 🕊️</p>
 				<br>
 			</center>
 		</footer>
@@ -159,24 +158,32 @@
 						}
 					}
 				})
-				let years_labes = ["2013","2014", "2015", "2016", "2017", "2018", "2019", "2020", "2021", "2022", "2023", "2024 *"]
-				let years_dt_in = [body.filter(i => i.dateIn.includes("2013")).length, body.filter(i => i.dateIn.includes("2014")).length, body.filter(i => i.dateIn.includes("2015")).length, body.filter(i => i.dateIn.includes("2016")).length, body.filter(i => i.dateIn.includes("2017")).length, body.filter(i => i.dateIn.includes("2018")).length, body.filter(i => i.dateIn.includes("2019")).length, body.filter(i => i.dateIn.includes("2020")).length, body.filter(i => i.dateIn.includes("2021")).length, body.filter(i => i.dateIn.includes("2022")).length, body.filter(i => i.dateIn.includes("2023")).length, body.filter(i => i.dateIn.includes("2024")).length]
+				let years_lables = ["2013","2014", "2015", "2016", "2017", "2018", "2019", "2020", "2021", "2022", "2023", "2024 *"]
+				let years_in = [body.filter(i => i.dateIn.includes("2013")).length, body.filter(i => i.dateIn.includes("2014")).length, body.filter(i => i.dateIn.includes("2015")).length, body.filter(i => i.dateIn.includes("2016")).length, body.filter(i => i.dateIn.includes("2017")).length, body.filter(i => i.dateIn.includes("2018")).length, body.filter(i => i.dateIn.includes("2019")).length, body.filter(i => i.dateIn.includes("2020")).length, body.filter(i => i.dateIn.includes("2021")).length, body.filter(i => i.dateIn.includes("2022")).length, body.filter(i => i.dateIn.includes("2023")).length, body.filter(i => i.dateIn.includes("2024")).length]
 
-				let years_dt_out = [body.filter(i => i.dateOut.includes("2013")).length, body.filter(i => i.dateOut.includes("2014")).length, body.filter(i => i.dateOut.includes("2015")).length, body.filter(i => i.dateOut.includes("2016")).length, body.filter(i => i.dateOut.includes("2017")).length, body.filter(i => i.dateOut.includes("2018")).length, body.filter(i => i.dateOut.includes("2019")).length, body.filter(i => i.dateOut.includes("2020")).length, body.filter(i => i.dateOut.includes("2021")).length, body.filter(i => i.dateOut.includes("2022")).length, body.filter(i => i.dateOut.includes("2023")).length, body.filter(i => i.dateOut.includes("2024")).length]
-				let years = new Chart(document.getElementById('years'), {
+				let years_out = [body.filter(i => i.dateOut.includes("2013")).length, body.filter(i => i.dateOut.includes("2014")).length, body.filter(i => i.dateOut.includes("2015")).length, body.filter(i => i.dateOut.includes("2016")).length, body.filter(i => i.dateOut.includes("2017")).length, body.filter(i => i.dateOut.includes("2018")).length, body.filter(i => i.dateOut.includes("2019")).length, body.filter(i => i.dateOut.includes("2020")).length, body.filter(i => i.dateOut.includes("2021")).length, body.filter(i => i.dateOut.includes("2022")).length, body.filter(i => i.dateOut.includes("2023")).length, body.filter(i => i.dateOut.includes("2024")).length]
+				let years_cfg = {
 					type: "bar",
 					data: {
-						labels: years_labes,
+						labels: years_lables,
 						datasets: [
 							{
 								label: 'Внесено',
-								backgroundColor: ["#1e88e5"],
-								data: years_dt_in
+								backgroundColor: "#1e88e5",
+								borderColor: "#1e88e5",
+								data: years_in,
+								pointStyle: 'circle',
+								pointRadius: 5,
+								pointHoverRadius: 10
 							},
 							{
 								label: 'Исключено',
 								backgroundColor: "#ff5722",
-								data: years_dt_out
+								borderColor: "#ff5722",
+								data: years_out,
+								pointStyle: 'circle',
+								pointRadius: 5,
+								pointHoverRadius: 10
 							}
 						]
 					},
@@ -200,53 +207,12 @@
 							opacity: 0.3
 						}
 					}
-				})
-				let years_line = new Chart(document.getElementById('years_line'), {
-					type: "line",
-					data: {
-						labels: years_labes,
-						datasets: [
-							{
-								label: 'Внесено',
-								backgroundColor: "#1e88e5",
-								borderColor: "#1e88e5",
-								data: years_dt_in,
-								pointStyle: 'circle',
-								pointRadius: 5,
-								pointHoverRadius: 10
-							},
-							{
-								label: 'Исключено',
-								backgroundColor: "#ff5722",
-								borderColor: "#ff5722",
-								data: years_dt_out,
-								pointStyle: 'circle',
-								pointRadius: 5,
-								pointHoverRadius: 10
-							}
-						]
-					},
-					options: {
-						plugins: {
-							title: {
-								display: true,
-								text: 'По кол-ву внесений/исключений (График)'
-							},
-							subtitle: {
-								display: true,
-								text: '* - на момент последнего обновления'
-							}
-						},
-						watermark: {
-							image: "https://habrastorage.org/webt/a_/xt/c_/a_xtc_o6zp8oqpzkamwvuzlayfq.jpeg",
-							x: 0,
-							y: 0,
-							width: 48,
-							height: 48,
-							opacity: 0.3
-						}
-					}
-				})
+				}
+				let years = new Chart(document.getElementById('years'), years_cfg)
+				window.years_cfg = years_cfg
+				window.years = years
+				document.querySelectorAll("button.btn-primary")[0].removeAttribute("disabled")
+				document.querySelectorAll("button.btn-primary")[1].removeAttribute("disabled")
 			})
 		</script>
 	</body>

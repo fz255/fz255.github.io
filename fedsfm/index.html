@@ -3,8 +3,8 @@
 	<head>
 		<meta name="mobile-web-app-capable" content="yes">
 		<meta name="apple-mobile-web-app-capable" content="yes">
-		<meta name="application-name" content="Реестр нежелательных организаций">
-		<meta name="apple-mobile-web-app-title" content="Реестр нежелательных организаций">
+		<meta name="application-name" content="Реестр террористов и экстремистов">
+		<meta name="apple-mobile-web-app-title" content="Реестр террористов и экстремистов">
 		<meta name="theme-color" content="#eeeeee">
 		<meta name="msapplication-navbutton-color" content="#eeeeee">
 		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -41,13 +41,10 @@
 						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
 					</div>
 					<div class="modal-body">
-						<p><b>Полное наименование:</b> <span id="fullName"></span></p>
-						<p><b>Решение Минюста о включении:</b> <span id="decisionInMinjust"></span></p>
-						<p><b>Решение Генеральной прокуратуры о признании деятельности нежелательной:</b> <span id="decisionInGenproc"></span></p>
-						<p><b>Решение Минюста об исключении:</b> <span id="decisionOutMinjust"></span></p>
-						<p><b>Решение Генеральной прокуратуры об отмене признания деятельности нежелательной:</b> <span id="decisionOutGenproc"></span></p>
-						<p><b>Дата включения:</b> <span id="dateIn"></span></p>
-						<p><b>Дата исключения:</b> <span id="dateOut"></span></p>
+						<p><b>Тип записи:</b> <span id="type"></span></p>
+						<p><b>ФИО:</b> <span id="name_full"></span></p>
+						<p><b>Дата рождения:</b> <span id="dob"></span></p>
+						<p><b>Место рождения:</b> <span id="pob"></span></p>
 					</div>
 					<div class="noprint modal-footer">
 						<button type="button" onclick="window.print()" class="btn btn-primary">Печать</button>
@@ -58,13 +55,13 @@
 		</div>
 		<nav class="navbar bg-body-tertiary noprint">
 			<div class="container-fluid">
-				<span class="navbar-brand mb-0 h1"><img src="https://habrastorage.org/webt/a_/xt/c_/a_xtc_o6zp8oqpzkamwvuzlayfq.jpeg" alt="Logo" width="30" height="30" class="d-inline-block align-text-top"> Реестр нежелательных организаций</span>
+				<span class="navbar-brand mb-0 h1"><img src="https://habrastorage.org/webt/a_/xt/c_/a_xtc_o6zp8oqpzkamwvuzlayfq.jpeg" alt="Logo" width="30" height="30" class="d-inline-block align-text-top"> Реестр террористов и экстремистов</span>
 				<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
 				<div class="collapse navbar-collapse" id="navbarNav">
 					<ul class="navbar-nav">
 						<li class="nav-item"><a class="nav-link active" aria-current="page" href="index.html">Главная</a></li>
 						<li class="nav-item"><a class="nav-link" href="stats.html">Статистика</a></li>
-						<li class="nav-item"><a class="nav-link" href="https://github.com/fz255/foreign-agents">Github</a></li>
+						<li class="nav-item"><a class="nav-link" href="https://extrem.ishukshin.ru/">Источник</a></li>
 					</ul>
 				</div>
 			</div>
@@ -92,38 +89,21 @@
 						"name": "№"
 					},
 					{
-						"id": "fullName",
-						"name": "Наименование"
+						"id": "name_full",
+						"name": "ФИО"
 					},
 					{
-						"id": "decisionInMinjust",
-						"name": "Решение Минюста о включении",
+						"id": "birth",
+						"name": "Дата рождения",
+					},
+					{
+						"id": "place",
+						"name": "Место рождения",
 						hidden: true
 					},
 					{
-						"id": "decisionInGenproc",
-						"name": "Решение Генеральной прокуратуры о признании деятельности нежелательной",
-						hidden: true
-					},
-					{
-						"id": "decisionOutMinjust",
-						"name": "Решение Минюста об исключении",
-						hidden: true
-					},
-					{
-						"id": "decisionOutGenproc",
-						"name": "Решение Генеральной прокуратуры об отмене признания деятельности нежелательной",
-						hidden: true
-					},
-
-					{
-						"id": "dateIn",
-						"name": "Дата включения",
-						hidden: true
-					},
-					{
-						"id": "dateOut",
-						"name": "Дата исключения",
+						"id": "is_terr",
+						"name": "Тип записи",
 						hidden: true
 					},
 					{
@@ -135,14 +115,10 @@
 								onClick: () => {
 									let data = row.cells
 									document.getElementById("number").textContent = data[0].data
-									document.getElementById("fullName").textContent = data[1].data
-									document.getElementById("decisionInMinjust").textContent = data[2].data
-									document.getElementById("decisionInGenproc").textContent = data[3].data
-									document.getElementById("decisionOutMinjust").textContent = data[4].data
-									document.getElementById("decisionOutGenproc").textContent = data[5].data
-				
-									document.getElementById("dateIn").textContent = data[6].data
-									document.getElementById("dateOut").textContent = data[7].data
+									document.getElementById("name_full").textContent = data[1].data
+									document.getElementById("dob").textContent = data[2].data
+									document.getElementById("pob").textContent = data[3].data
+									document.getElementById("type").textContent = data[4].data ? "Террорист" : "Экстремист"
 									new bootstrap.Modal("#card").show()
 								}
 							}, 'Просмотр')
@@ -158,7 +134,7 @@
 				},
 				language: gridjs.l10n.ruRU,
 				server: {
-					url: `https://raw.githubusercontent.com/fz255/undesirable-organizations/main/registry.json`,
+					url: `https://api.li0ard.rest/fuckcors?url=https://extrem.ishukshin.ru/json/all`,
 					then: data => data
 				}
 			})
