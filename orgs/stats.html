@@ -35,24 +35,29 @@
 				</div>
 			</div>
 		</nav>
-		<div class="container">
-			<br>
-			<div class="row">
-				<center>
-					<h2>Статистика</h2>
-				</center>
-			</div>
-			<br>
-			<div style="margin-top: 20px;" class="row">
-				<center>
-					<canvas aria-label="Кол-во включений и исключений по годам" role="img" id="years"></canvas>
-					<div>
-						<button disabled onClick='years_cfg.type = "bar"; years.update()' class="btn btn-primary">Диаграмма</button>
-						<button disabled onClick='years_cfg.type = "line"; years.update()'class="btn btn-primary">График</button>
+		<div style="margin-top: 20px;" class="wrapper d-flex flex-column min-vh-100">
+			<div class="body flex-grow-1">
+				<div class="container-lg px-4">
+					<div class="row">
+						<div class="col">
+							<div class="card mb-4">
+								<div class="card-header"><span class="small ms-1">Кол-во включений и исключений по годам</span></div>
+								<div class="card-body">
+									<div class="p-3">
+										<canvas aria-label="Кол-во включений и исключений по годам" role="img" id="years"></canvas>
+										<div style="margin-top: 10px;">
+											<center>
+												<button disabled onClick='years_cfg.type = "bar"; years.update()' class="btn btn-primary">Диаграмма</button>
+												<button disabled onClick='years_cfg.type = "line"; years.update()'class="btn btn-primary">График</button>
+											</center>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
 					</div>
-				</center>
+				</div>
 			</div>
-			<br>
 		</div>
 		<footer>
 			<center>
