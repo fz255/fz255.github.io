@@ -29,8 +29,8 @@
 				<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
 				<div class="collapse navbar-collapse" id="navbarNav">
 					<ul class="navbar-nav">
-						<li class="nav-item"><a class="nav-link active" aria-current="page" href="index.html">Главная</a></li>
-						<li class="nav-item"><a class="nav-link" href="stats.html">Статистика</a></li>
+						<li class="nav-item"><a class="nav-link" aria-current="page" href="index.html">Главная</a></li>
+						<li class="nav-item"><a class="nav-link active" aria-current="page" href="stats.html">Статистика</a></li>
 						<li class="nav-item"><a class="nav-link" href="https://minjust.gov.ru/ru/activity/directions/998/">Реестр на сайте Министерства Юстиции</a></li>
 						<li class="nav-item"><a class="nav-link" href="https://minjust.gov.ru/ru/events/list/?words=О+реестре+иностранных+агентов&start_date=&end_date=&page=1">Поиск причины внесения</a></li>
 						<li class="nav-item"><a class="nav-link" href="https://github.com/fz255/foreign-agents">Github</a></li>
@@ -96,9 +96,30 @@
 			</center>
 		</footer>
 		<script type="text/javascript">
-			//ff5722
-			//00e676
-			//1e88e5
+			function generateYears(from) {
+				let curr = new Date().getFullYear(), years = [];
+				while ( from < curr ) {
+					years.push((from++).toString());
+				}
+				years.push(`${curr} *`)
+				return years;
+			}
+			function filter(body, prop, from) {
+				let curr = new Date().getFullYear(), output = [];
+				while ( from <= curr ) {
+					output.push(body.filter(i => i[prop].includes(from.toString())).length);
+					from++;
+				}
+				return output;
+			}
+			function filterLaw(body) {
+				let laws = ["Статья 2.1", "Статья 6", "Статья 25.1", "Статья 29.1", "Статья 32", "Статья 7", "Статья 9"], output = [];
+				for(let law of laws) {
+					output.push(body.filter(i => i.law.includes(law)).length)
+				}
+				return output
+			}
+
 			fetch(`https://raw.githubusercontent.com/fz255/foreign-agents/main/registry.json`)
 			.then(res => res.json())
 			.then(body => {
@@ -116,115 +137,39 @@
 						}]
 					},
 					options: {
-						plugins: {
-							title: {
-								display: true,
-								text: 'По типу агента'
-							},
-							subtitle: {
-								display: true,
-								text: `Всего: ${body.length} записей`
-							}
-						},
-						watermark: {
-							image: "https://habrastorage.org/webt/a_/xt/c_/a_xtc_o6zp8oqpzkamwvuzlayfq.jpeg",
-							x: 0,
-							y: 0,
-							width: 48,
-							height: 48,
-							opacity: 0.3
-						}
+						plugins: { title: { display: true, text: 'По типу агента' }, subtitle: { display: true, text: `Всего: ${body.length} записей` } },
+						watermark: { image: "https://habrastorage.org/webt/a_/xt/c_/a_xtc_o6zp8oqpzkamwvuzlayfq.jpeg", x: 0, y: 0, width: 48, height: 48, opacity: 0.3 }
 					}
 				});
-				//type.canvas.parentNode.style.height = '80vh';
 				let law = new Chart(document.getElementById("law"), {
 					type: "pie",
 					data: {
 						labels: ['ст. 2.1 272-ФЗ *', 'ст. 6 Закона "О СМИ"', 'ст. 25.1 Закона "О СМИ" *', 'cт. 29.1 82-ФЗ *', 'ст. 32 7-ФЗ', 'ст. 7 255-ФЗ', 'ст. 9 255-ФЗ'],
 						datasets: [{
-							data: [
-								body.filter(i => i.law.includes("Статья 2.1")).length,
-								body.filter(i => i.law.includes("Статья 6")).length,
-								body.filter(i => i.law.includes("Статья 25.1")).length,
-								body.filter(i => i.law.includes("Статья 29.1")).length,
-								body.filter(i => i.law.includes("Статья 32")).length,
-								body.filter(i => i.law.includes("Статья 7")).length,
-								body.filter(i => i.law.includes("Статья 9")).length
-							],
+							data: filterLaw(body),
 							backgroundColor: ['#4dc9f6', '#f67019',  '#f53794', '#acc236', '#00a950', '#58595b', '#8549ba'],
 							borderWidth: 0.5 ,
 							borderColor: '#ddd'
 						}]
 					},
 					options: {
-						plugins: {
-							title: {
-								display: true,
-								text: 'По основанию'
-							},
-							subtitle: {
-								display: true,
-								text: `* - статья утратила силу`
-							}
-						},
-						watermark: {
-							image: "https://habrastorage.org/webt/a_/xt/c_/a_xtc_o6zp8oqpzkamwvuzlayfq.jpeg",
-							x: 0,
-							y: 0,
-							width: 48,
-							height: 48,
-							opacity: 0.3
-						}
+						plugins: { title: { display: true, text: 'По основанию' }, subtitle: { display: true, text: `* - статья утратила силу` } },
+						watermark: { image: "https://habrastorage.org/webt/a_/xt/c_/a_xtc_o6zp8oqpzkamwvuzlayfq.jpeg", x: 0, y: 0, width: 48, height: 48, opacity: 0.3 }
 					}
 				})
-				let years_lables = ["2013","2014", "2015", "2016", "2017", "2018", "2019", "2020", "2021", "2022", "2023", "2024 *"]
-				let years_in = [body.filter(i => i.dateIn.includes("2013")).length, body.filter(i => i.dateIn.includes("2014")).length, body.filter(i => i.dateIn.includes("2015")).length, body.filter(i => i.dateIn.includes("2016")).length, body.filter(i => i.dateIn.includes("2017")).length, body.filter(i => i.dateIn.includes("2018")).length, body.filter(i => i.dateIn.includes("2019")).length, body.filter(i => i.dateIn.includes("2020")).length, body.filter(i => i.dateIn.includes("2021")).length, body.filter(i => i.dateIn.includes("2022")).length, body.filter(i => i.dateIn.includes("2023")).length, body.filter(i => i.dateIn.includes("2024")).length]
-
-				let years_out = [body.filter(i => i.dateOut.includes("2013")).length, body.filter(i => i.dateOut.includes("2014")).length, body.filter(i => i.dateOut.includes("2015")).length, body.filter(i => i.dateOut.includes("2016")).length, body.filter(i => i.dateOut.includes("2017")).length, body.filter(i => i.dateOut.includes("2018")).length, body.filter(i => i.dateOut.includes("2019")).length, body.filter(i => i.dateOut.includes("2020")).length, body.filter(i => i.dateOut.includes("2021")).length, body.filter(i => i.dateOut.includes("2022")).length, body.filter(i => i.dateOut.includes("2023")).length, body.filter(i => i.dateOut.includes("2024")).length]
 				let years_cfg = {
 					type: "bar",
 					data: {
-						labels: years_lables,
+						labels: generateYears(2013),
 						datasets: [
-							{
-								label: 'Внесено',
-								backgroundColor: "#1e88e5",
-								borderColor: "#1e88e5",
-								data: years_in,
-								pointStyle: 'circle',
-								pointRadius: 5,
-								pointHoverRadius: 10
-							},
-							{
-								label: 'Исключено',
-								backgroundColor: "#ff5722",
-								borderColor: "#ff5722",
-								data: years_out,
-								pointStyle: 'circle',
-								pointRadius: 5,
-								pointHoverRadius: 10
-							}
+							{ label: 'Внесено', backgroundColor: "#1e88e5", borderColor: "#1e88e5", data: filter(body, "dateIn", 2013), pointStyle: 'circle', pointRadius: 5, pointHoverRadius: 10 },
+							{ label: 'Исключено', backgroundColor: "#ff5722", borderColor: "#ff5722", data: filter(body, "dateOut", 2013), pointStyle: 'circle', pointRadius: 5, pointHoverRadius: 10 }
 						]
 					},
 					options: {
-						plugins: {
-							title: {
-								display: true,
-								text: 'По кол-ву внесений/исключений'
-							},
-							subtitle: {
-								display: true,
-								text: '* - на момент последнего обновления'
-							}
+						plugins: { title: { display: true, text: 'По кол-ву внесений/исключений' }, subtitle: { display: true, text: '* - на момент последнего обновления' }
 						},
-						watermark: {
-							image: "https://habrastorage.org/webt/a_/xt/c_/a_xtc_o6zp8oqpzkamwvuzlayfq.jpeg",
-							x: 0,
-							y: 0,
-							width: 48,
-							height: 48,
-							opacity: 0.3
-						}
+						watermark: { image: "https://habrastorage.org/webt/a_/xt/c_/a_xtc_o6zp8oqpzkamwvuzlayfq.jpeg", x: 0, y: 0, width: 48, height: 48, opacity: 0.3 }
 					}
 				}
 				let years = new Chart(document.getElementById('years'), years_cfg)

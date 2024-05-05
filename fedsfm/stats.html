@@ -28,8 +28,8 @@
 				<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
 				<div class="collapse navbar-collapse" id="navbarNav">
 					<ul class="navbar-nav">
-						<li class="nav-item"><a class="nav-link active" aria-current="page" href="index.html">Главная</a></li>
-						<li class="nav-item"><a class="nav-link" href="stats.html">Статистика</a></li>
+						<li class="nav-item"><a class="nav-link" href="index.html">Главная</a></li>
+						<li class="nav-item"><a class="nav-link active" aria-current="page" href="stats.html">Статистика</a></li>
 						<li class="nav-item"><a class="nav-link" href="https://extrem.ishukshin.ru/">Источник</a></li>
 					</ul>
 				</div>
@@ -85,37 +85,6 @@
 				</div>
 			</div>
 		</div>
-		<!--<div class="container">
-			<br>
-			<div class="row">
-				<center>
-					<h2>Статистика</h2>
-				</center>
-			</div>
-			<br>
-			<div style="margin-top: 20px;" class="row">
-				<div class="col">
-					<center>
-						<canvas aria-label="По типу записи" role="img" id="type"></canvas>
-					</center>
-				</div>
-				<div class="col">
-					<center>
-						<canvas aria-label="Являются уроженцами Украины" role="img" id="ukr"></canvas>
-					</center>
-				</div>
-			</div>
-			<div style="margin-top: 20px;" class="row">
-				<center>
-					<canvas aria-label="По кол-ву внесений (Диаграмма)" role="img" id="years"></canvas>
-					<div>
-						<button disabled onClick='years_cfg.type = "bar"; years.update()' class="btn btn-primary">Диаграмма</button>
-						<button disabled onClick='years_cfg.type = "line"; years.update()'class="btn btn-primary">График</button>
-					</div>
-				</center>
-			</div>
-			<br>
-		</div>-->
 		<footer>
 			<center>
 				<br>
@@ -124,6 +93,23 @@
 			</center>
 		</footer>
 		<script type="text/javascript">
+			function generateYears(from) {
+				let curr = new Date().getFullYear(), years = [];
+				while ( from < curr ) {
+					years.push((from++).toString());
+				}
+				years.push(`${curr} *`)
+				return years;
+			}
+			function filter(body, prop, val, from) {
+				let curr = new Date().getFullYear(), output = [];
+				while ( from <= curr ) {
+					output.push(body.filter(i => i[prop].includes(from.toString()) && i.is_terr == val).length);
+					from++;
+				}
+				return output;
+			}
+
 			fetch(`https://api.li0ard.rest/fuckcors?url=https://extrem.ishukshin.ru/json/all`)
 			.then(res => res.json())
 			.then(body => {
@@ -134,12 +120,7 @@
 					type: 'pie',
 					data: {
 						labels: ['Террористы', 'Экстремисты'],
-						datasets: [{
-							data: [terr, extr],
-							backgroundColor: ['#ff5722', '#00e676'],
-							borderWidth: 0.5 ,
-							borderColor: '#ddd'
-						}]
+						datasets: [{ data: [terr, extr], backgroundColor: ['#ff5722', '#00e676'], borderWidth: 0.5 , borderColor: '#ddd' }]
 					},
 					options: {
 						plugins: { title: { display: true, text: 'По типу записи' }, subtitle: { display: true, text: `Всего: ${body.length} записей` } },
@@ -150,12 +131,7 @@
 					type: 'pie',
 					data: {
 						labels: ['Уроженцы', 'Не уроженцы'],
-						datasets: [{
-							data: [ukrn, body.length - ukrn],
-							backgroundColor: ['#ff5722', '#00e676'],
-							borderWidth: 0.5 ,
-							borderColor: '#ddd'
-						}]
+						datasets: [{ data: [ukrn, body.length - ukrn], backgroundColor: ['#ff5722', '#00e676'], borderWidth: 0.5 , borderColor: '#ddd' }]
 					},
 					options: {
 						plugins: {
@@ -164,43 +140,18 @@
 						watermark: { image: "https://habrastorage.org/webt/a_/xt/c_/a_xtc_o6zp8oqpzkamwvuzlayfq.jpeg", x: 0, y: 0, width: 48, height: 48, opacity: 0.3 }
 					}
 				});
-				let years_labels = ["2018", "2019", "2020", "2021", "2022", "2023", "2024 *"]
-				let years_in = [body.filter(i => i.added_at.includes("2018")).length, body.filter(i => i.added_at.includes("2019")).length, body.filter(i => i.added_at.includes("2020")).length, body.filter(i => i.added_at.includes("2021")).length, body.filter(i => i.added_at.includes("2022")).length, body.filter(i => i.added_at.includes("2023")).length, body.filter(i => i.added_at.includes("2024")).length]
 				let years_cfg = {
 					type: "bar",
 					data: {
-						labels: years_labels,
+						labels: generateYears(2018),
 						datasets: [
-							{
-								label: 'Внесено',
-								backgroundColor: ["#1e88e5"],
-								borderColor: "#1e88e5",
-								data: years_in,
-								pointStyle: 'circle',
-								pointRadius: 5,
-								pointHoverRadius: 10
-							}
+							{ label: 'Экстремисты', backgroundColor: ["#1e88e5"], borderColor: "#1e88e5", data: filter(body, "added_at", false, 2018), pointStyle: 'circle', pointRadius: 5, pointHoverRadius: 10 },
+							{ label: 'Террористы', backgroundColor: ["#ff5722"], borderColor: "#ff5722", data: filter(body, "added_at", true, 2018), pointStyle: 'circle', pointRadius: 5, pointHoverRadius: 10 }
 						]
 					},
 					options: {
-						plugins: {
-							title: {
-								display: true,
-								text: 'По кол-ву внесений/исключений (Диаграмма)'
-							},
-							subtitle: {
-								display: true,
-								text: '* - на момент последнего обновления'
-							}
-						},
-						watermark: {
-							image: "https://habrastorage.org/webt/a_/xt/c_/a_xtc_o6zp8oqpzkamwvuzlayfq.jpeg",
-							x: 0,
-							y: 0,
-							width: 48,
-							height: 48,
-							opacity: 0.3
-						}
+						plugins: { title: { display: true, text: 'По кол-ву внесений/исключений (Диаграмма)' }, subtitle: { display: true, text: '* - на момент последнего обновления' } },
+						watermark: { image: "https://habrastorage.org/webt/a_/xt/c_/a_xtc_o6zp8oqpzkamwvuzlayfq.jpeg", x: 0, y: 0, width: 48, height: 48, opacity: 0.3 }
 					}
 				}
 				let years = new Chart(document.getElementById('years'), years_cfg)
