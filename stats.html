@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<link rel="manifest" href="manifest.json">
 		<meta name="mobile-web-app-capable" content="yes">
 		<meta name="apple-mobile-web-app-capable" content="yes">
 		<meta name="application-name" content="Реестр иноагентов">
@@ -33,6 +32,7 @@
 						<li class="nav-item"><a class="nav-link active" aria-current="page" href="stats.html">Статистика</a></li>
 						<li class="nav-item"><a class="nav-link" href="https://minjust.gov.ru/ru/activity/directions/998/">Реестр на сайте Министерства Юстиции</a></li>
 						<li class="nav-item"><a class="nav-link" href="https://minjust.gov.ru/ru/events/list/?words=О+реестре+иностранных+агентов&start_date=&end_date=&page=1">Поиск причины внесения</a></li>
+						<li class="nav-item"><a class="nav-link" href="http://unro.minjust.ru/NKOReports.aspx?request_type=inag">Отчёты НКО</a></li>
 						<li class="nav-item"><a class="nav-link" href="https://github.com/fz255/foreign-agents">Github</a></li>
 					</ul>
 				</div>
@@ -67,7 +67,7 @@
 							</div>
 						</div>
 					</div>
-					<div class="row">
+					<div class="row row-cols-1 row-cols-md-2">
 						<div class="col">
 							<div class="card mb-4">
 								<div class="card-header"><span class="small ms-1">Кол-во включений и исключений по годам</span></div>
@@ -80,6 +80,17 @@
 												<button disabled onClick='years_cfg.type = "line"; years.update()'class="btn btn-primary">График</button>
 											</center>
 										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="col">
+							<div class="card mb-4">
+								<div class="card-header"><span class="small ms-1">Прочее</span></div>
+								<div class="card-body">
+									<div class="p-3">
+										<p>Самый молодой иноагент - <b><span id="youngest"></span></b></p>
+										<p>Самый пожилой иноагент - <b><span id="oldest"></span></b></p>
 									</div>
 								</div>
 							</div>
@@ -124,7 +135,7 @@
 			.then(res => res.json())
 			.then(body => {
 				let ul = body.filter(i => i.inn.length==10).length
-				let fl = body.filter(i => i.inn.length==12).length
+				let fl = body.filter(i => i.dob != "" || i.inn.length==12).length
 				let type = new Chart(document.getElementById('type'), {
 					type: 'pie',
 					data: {
@@ -177,6 +188,22 @@
 				window.years = years
 				document.querySelectorAll("button.btn-primary")[0].removeAttribute("disabled")
 				document.querySelectorAll("button.btn-primary")[1].removeAttribute("disabled")
+
+				let fls = body.filter(i => i.dob != "").map(i => { return { fullName: i.fullName, dob: i.dob, id: i.id } })
+				let youngest = fls.reduce((prev, current) => {
+					const prevDate = new Date(prev.dob.split('.').reverse().join('-'));
+					const currentDate = new Date(current.dob.split('.').reverse().join('-'));
+
+					return currentDate < prevDate ? prev : current;
+				})
+				let oldest = fls.reduce((prev, current) => {
+					const prevDate = new Date(prev.dob.split('.').reverse().join('-'));
+					const currentDate = new Date(current.dob.split('.').reverse().join('-'));
+
+					return currentDate > prevDate ? prev : current;
+				})
+				document.getElementById("youngest").textContent = `${youngest.fullName} (${youngest.dob}, запись №${youngest.id})`
+				document.getElementById("oldest").textContent = `${oldest.fullName} (${oldest.dob}, запись №${oldest.id})`
 			})
 		</script>
 	</body>

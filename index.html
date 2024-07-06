@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<link rel="manifest" href="manifest.json">
 		<meta name="mobile-web-app-capable" content="yes">
 		<meta name="apple-mobile-web-app-capable" content="yes">
 		<meta name="application-name" content="Реестр иноагентов">
@@ -53,6 +52,7 @@
 						<p><b>Участники:</b> <span id="members"></span></p>
 						<p><b>Основание для включения:</b> <span id="law"></span></p>
 						<p><b>Дата включения:</b> <span id="dateIn"></span></p>
+						<p><b>Дата опубликования решения о включении:</b> <span id="datePubl"></span></p>
 						<p><b>Дата исключения:</b> <span id="dateOut"></span></p>
 						<br class="noprint">
 						<p class="noprint"><b>Сноска (для сайтов и т.п): <code><span id="msg"></span></code></b></p>
@@ -74,6 +74,7 @@
 						<li class="nav-item"><a class="nav-link" href="stats.html">Статистика</a></li>
 						<li class="nav-item"><a class="nav-link" href="https://minjust.gov.ru/ru/activity/directions/998/">Реестр на сайте Министерства Юстиции</a></li>
 						<li class="nav-item"><a class="nav-link" href="https://minjust.gov.ru/ru/events/list/?words=О+реестре+иностранных+агентов&start_date=&end_date=&page=1">Поиск причины внесения</a></li>
+						<li class="nav-item"><a class="nav-link" href="http://unro.minjust.ru/NKOReports.aspx?request_type=inag">Отчёты НКО</a></li>
 						<li class="nav-item"><a class="nav-link" href="https://github.com/fz255/foreign-agents">Github</a></li>
 					</ul>
 				</div>
@@ -162,6 +163,11 @@
 						hidden: true
 					},
 					{
+						"id": "datePubl",
+						"name": "Дата опубликования решения о включении",
+						hidden: true
+					},
+					{
 						"id": "actions",
 						"name": "",
 						formatter: (cell, row) => {
@@ -183,6 +189,7 @@
 									document.getElementById("law").textContent = data[10].data
 									document.getElementById("dateIn").textContent = data[11].data
 									document.getElementById("dateOut").textContent = data[12].data
+									document.getElementById("datePubl").textContent = data[13].data
 									document.getElementById("msg").textContent = `18+ НАСТОЯЩИЙ МАТЕРИАЛ (ИНФОРМАЦИЯ) ПРОИЗВЕДЕН И (ИЛИ) РАСПРОСТРАНЕН ИНОСТРАННЫМ АГЕНТОМ ${data[1].data.toUpperCase()}, ЛИБО КАСАЕТСЯ ДЕЯТЕЛЬНОСТИ ИНОСТРАННОГО АГЕНТА ${data[1].data.toUpperCase()}.`
 									new bootstrap.Modal("#card").show()
 								}
