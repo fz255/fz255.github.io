@@ -21,7 +21,9 @@
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/gridjs/6.0.6/gridjs.production.min.js"></script>
 		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
 		<script src="https://unpkg.com/gridjs@6.0.6/l10n/dist/l10n.umd.js"></script>
+
 		<style>
+			@import url("https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css");
 			@media print {
 				.noprint {
 					display: none;
@@ -29,6 +31,9 @@
 				.print {
 					display: block;
 				}
+			}
+			.value {
+				margin-top: -15px;
 			}
 		</style>
 	</head>
@@ -41,21 +46,66 @@
 						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
 					</div>
 					<div class="modal-body">
-						<p><b>Полное наименование:</b> <span id="name"></span></p>
-						<p><b>Дата рождения:</b> <span id="dob"></span></p>
-						<p><b>ОГРН:</b> <span id="ogrn"></span></p>
-						<p><b>ИНН:</b> <a id="inn_link"><span id="inn"></span></a></p>
-						<p><b>Регистрационный номер:</b> <span id="regNum"></span></p>
-						<p><b>СНИЛС:</b> <span id="snils"></span></p>
-						<p><b>Место нахождения:</b> <span id="address"></span></p>
-						<p><b>Информационный ресурс:</b> <span id="resources"></span></p>
-						<p><b>Участники:</b> <span id="members"></span></p>
-						<p><b>Основание для включения:</b> <span id="law"></span></p>
-						<p><b>Дата включения:</b> <span id="dateIn"></span></p>
-						<p><b>Дата опубликования решения о включении:</b> <span id="datePubl"></span></p>
-						<p><b>Дата исключения:</b> <span id="dateOut"></span></p>
-						<br class="noprint">
-						<p class="noprint"><b>Сноска (для сайтов и т.п): <code><span id="msg"></span></code></b></p>
+						<div class="row">
+							<div class="col">
+								<p>ФИО/Наименование</p>
+								<p id="name" class="value text-body-secondary"></p>
+								<p>Дата рождения</p>
+								<p id="dob" class="value text-body-secondary"></p>
+								<p>Регистрационная информация <a class="noprint" data-bs-toggle="tooltip" data-bs-title="Для физ.лиц указывается ИНН и СНИЛС, для юр.лиц РФ указывается ИНН и ОГРН, для иностранных юр.лиц указывается регистрационный номер в стране регистрации"><i class="bi bi-question-circle"></i></a></p>
+								<p id="reg" class="value text-body-secondary"></p>
+							</div>
+							<div class="col">
+								<p>Основание для включения</p>
+								<p class="value text-body-secondary"><a href="" id="law_link"><span id="law"></span></a></p>
+								<p>Дата включения</p>
+								<p id="dateIn" class="value text-body-secondary"></p>
+								<p>Дата опубликования решения о включении</p>
+								<p id="datePubl" class="value text-body-secondary"></p>
+								<p>Дата исключения</p>
+								<p id="dateOut" class="value text-body-secondary"></p>
+							</div>
+						</div>
+						<div class="row noprint">
+							<div class="accordion">
+								<div class="accordion-item">
+									<h2 class="accordion-header">
+										<button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseResources" aria-expanded="false" aria-controls="collapseResources">
+											Информационные ресурсы
+										</button>
+									</h2>
+									<div id="collapseResources" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
+										<div style="word-wrap: break-word;" class="accordion-body">
+											<span id="resources"></span>
+										</div>
+									</div>
+								</div>
+								<div class="accordion-item">
+									<h2 class="accordion-header">
+										<button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseMembers" aria-expanded="false" aria-controls="collapseMembers">
+											Участники
+										</button>
+									</h2>
+									<div id="collapseMembers" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
+										<div style="word-wrap: break-word;" class="accordion-body">
+											<span id="members"></span>
+										</div>
+									</div>
+								</div>
+								<div class="accordion-item">
+									<h2 class="accordion-header">
+										<button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseMsg" aria-expanded="false" aria-controls="collapseMsg">
+											Сноска (для сайтов и т.п)
+										</button>
+									</h2>
+									<div id="collapseMsg" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
+										<div class="accordion-body">
+											<span id="msg"></span>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
 					</div>
 					<div class="noprint modal-footer">
 						<button type="button" onclick="window.print()" class="btn btn-primary">Печать</button>
@@ -96,6 +146,8 @@
 			</center>
 		</footer>
 		<script type="text/javascript">
+			const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
+			const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
 			const grid = new gridjs.Grid({
 				columns: [
 					{
@@ -177,20 +229,29 @@
 									let data = row.cells
 									document.getElementById("number").textContent = data[0].data
 									document.getElementById("name").textContent = data[1].data
-									document.getElementById("dob").textContent = data[2].data
-									document.getElementById("ogrn").textContent = data[3].data
-									document.getElementById("inn").textContent = data[4].data
-									document.getElementById("inn_link").setAttribute("href", `https://egrul.itsoft.ru/${data[4].data.split(" ").join("")}`)
-									document.getElementById("regNum").textContent = data[5].data
-									document.getElementById("snils").textContent = data[6].data
-									document.getElementById("address").textContent = data[7].data
-									document.getElementById("resources").textContent = data[8].data
-									document.getElementById("members").textContent = data[9].data
+									document.getElementById("dob").textContent = data[2].data != "" ? data[2].data : "-"
+									//document.getElementById("address").textContent = data[7].data
+									document.getElementById("resources").textContent = data[8].data != "" ? data[8].data : "Не указаны"
+									document.getElementById("members").textContent = data[9].data != "" ? data[9].data : "Не указаны"
 									document.getElementById("law").textContent = data[10].data
+									document.getElementById("law_link").setAttribute("href", `https://www.consultant.ru/search/?q=${data[10].data}`)
 									document.getElementById("dateIn").textContent = data[11].data
-									document.getElementById("dateOut").textContent = data[12].data
-									document.getElementById("datePubl").textContent = data[13].data
+									document.getElementById("dateOut").textContent = data[12].data != "" ? data[12].data : "-"
+									document.getElementById("datePubl").textContent = data[13].data != "" ? data[13].data : "-"
 									document.getElementById("msg").textContent = `18+ НАСТОЯЩИЙ МАТЕРИАЛ (ИНФОРМАЦИЯ) ПРОИЗВЕДЕН И (ИЛИ) РАСПРОСТРАНЕН ИНОСТРАННЫМ АГЕНТОМ ${data[1].data.toUpperCase()}, ЛИБО КАСАЕТСЯ ДЕЯТЕЛЬНОСТИ ИНОСТРАННОГО АГЕНТА ${data[1].data.toUpperCase()}.`
+
+									if (data[2].data != "" || data[4].data.length == 12) {
+										document.getElementById("reg").innerHTML = `${data[4].data != "" ? `<a href="https://egrul.itsoft.ru/${data[4].data.split(" ").join("")}">${data[4].data}</a>` : "-"} / ${data[6].data != "" ? data[6].data : "-"}`
+									}
+									else if(data[3].data != "" || data[4].data.length == 10) {
+										document.getElementById("reg").innerHTML = `<a href="https://egrul.itsoft.ru/${data[4].data.split(" ").join("")}">${data[4].data}</a> / ${data[3].data != "" ? data[3].data : "-"}`
+									}
+									else if(data[5].data != "") {
+										document.getElementById("reg").innerHTML = `${data[5].data}`
+									}
+									else {
+										document.getElementById("reg").innerHTML = `-`
+									}
 									new bootstrap.Modal("#card").show()
 								}
 							}, 'Просмотр')
