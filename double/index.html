@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta name="mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="application-name" content="Люди с двойным статусом">
+		<meta name="apple-mobile-web-app-title" content="Люди с двойным статусом">
+		<meta name="theme-color" content="#eeeeee">
+		<meta name="msapplication-navbutton-color" content="#eeeeee">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+		<meta name="msapplication-starturl" content="/">
+		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+		<link rel="icon" type="image/jpeg" sizes="256x256" href="https://hsto.org/webt/a_/xt/c_/a_xtc_o6zp8oqpzkamwvuzlayfq.jpeg">
+		<link rel="apple-touch-icon" type="image/jpeg" sizes="256x256" href="https://hsto.org/webt/a_/xt/c_/a_xtc_o6zp8oqpzkamwvuzlayfq.jpeg">
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Люди с двойным статусом</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
+		<link href="https://cdnjs.cloudflare.com/ajax/libs/gridjs/6.0.6/theme/mermaid.min.css" rel="stylesheet">
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/gridjs/6.0.6/gridjs.production.min.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
+		<script src="https://unpkg.com/gridjs@6.0.6/l10n/dist/l10n.umd.js"></script>
+		<style>
+			@media print {
+				.noprint {
+					display: none;
+				}
+				.print {
+					display: block;
+				}
+			}
+		</style>
+    </head>
+    <body>
+        <nav class="navbar bg-body-tertiary noprint">
+			<div class="container-fluid">
+				<span class="navbar-brand mb-0 h1"><img src="https://habrastorage.org/webt/a_/xt/c_/a_xtc_o6zp8oqpzkamwvuzlayfq.jpeg" alt="Logo" width="30" height="30" class="d-inline-block align-text-top"> Люди с двойным статусом</span>
+			</div>
+		</nav>
+        <div class="container noprint">
+			<br>
+			<div class="row">
+				<center>
+                    <div id="loading">
+                        <p>Двойной статус - это наличие записи о человеке одновременно<br>в реестре иностранных агентов Минюста и в реестре экстремистов/террористов РосФинМониторинга.<br></p>
+                        <p>Загрузка...</p>
+                        <div class="progress" role="progressbar">
+                            <div id="bar" class="progress-bar" style="width: 0%;"></div>
+                        </div>
+                    </div>
+					<div id="reestr"></div>
+				</center>
+			</div>
+		</div>
+		<footer class="noprint">
+			<center>
+				<br>
+				<p>&copy; 2024, <a href="https://li0ard.github.io">li0ard</a>. Made with 🕊️</p>
+				<br>
+			</center>
+		</footer>
+        <script>
+            (async function (){
+                document.getElementById("bar").style.width = "20%"
+                let inoagents = await fetch(`https://raw.githubusercontent.com/fz255/foreign-agents/main/registry.json`)
+                inoagents = await inoagents.json()
+                
+                document.getElementById("bar").style.width = "40%"
+                let fedsfm = await fetch(`https://apiv2.li0ard.rest/cors?url=https://extrem.ishukshin.ru/json/all`)
+                fedsfm = await fedsfm.json()
+                
+                document.getElementById("bar").style.width = "60%"
+                inoagents = inoagents.filter(i => i.dob != "").map(i => [
+                    i.fullName.toUpperCase().trim().replace(/ \(.+\)/gm, ``),
+                    i.dob
+                ])
+                
+                document.getElementById("bar").style.width = "80%"
+                fedsfm = fedsfm.filter(i => !!i.birth).map(i => [i.name_full.replace("*", ""), i.birth.replace(" г.р.", "")])
+
+                let result = []
+
+                for(let i of inoagents) {
+                    if(fedsfm.filter(j => j[0] == i[0] && j[1] == i[1]).length != 0) {
+                        result.push(i)
+                    }
+                }
+                document.getElementById("bar").style.width = "80%"
+                
+                const grid = new gridjs.Grid({
+				    columns: ["ФИО", {
+                        name: "Дата рождения",
+                        sort: false
+                    }],
+                    data: result,
+				    pagination: {
+				    	limit: 10
+				    },
+                    sort: true,
+				    fixedHeader: true,
+				    search: {
+				    	ignoreHiddenColumns: false,
+				    },
+				    language: gridjs.l10n.ruRU,
+			    })
+                document.getElementById("loading").style.display = "none"
+			    grid.render(document.getElementById("reestr"));
+            })()
+        </script>
+    </body>
+</html>
